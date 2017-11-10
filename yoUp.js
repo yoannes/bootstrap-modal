@@ -1,4 +1,4 @@
-// yoUp V1.0
+// yoUp V1.1
 // This script requires jQuery and Bootstrap V4
 
 // params = {
@@ -26,10 +26,10 @@ var yoUp = {
         "<div class='row'>" +
           "<div class='col-1'></div>" +
           "<div class='col-5'>" +
-            "<button class='btn btn-secondary btn-block' data-dismiss='modal'>"+ yoUp.lang[yoUp.lang.lang].cancel +"</button>" +
+            "<button class='btn btn-secondary btn-block' data-dismiss='modal'>"+ yoUp.lang.cancel[yoUp.locale] +"</button>" +
           "</div>" +
           "<div class='col-5'>" +
-            "<button class='btn btn-primary btn-block' id='yoUpConfirmBtn'>"+ yoUp.lang[yoUp.lang.lang].confirm +"</button>" +
+            "<button class='btn btn-primary btn-block' id='yoUpConfirmBtn'>"+ yoUp.lang.confirm[yoUp.locale] +"</button>" +
           "</div>" +
           "<div class='col-1'></div>" +
         "</div>";
@@ -63,7 +63,7 @@ var yoUp = {
       footer.innerHTML +=
         "<div class='row'>" +
           "<div class='col-3'></div>" +
-          "<div class='col-6'><button class='btn btn-primary btn-block' data-dismiss='modal' id='yoUpAlertBtn'>OK</button></div>" +
+          "<div class='col-6'><button class='btn btn-primary btn-block' data-dismiss='modal' id='yoUpAlertBtn'>"+ yoUp.lang.ok[yoUp.locale] +"</button></div>" +
           "<div class='col-3'></div>" +
         "</div>";
 
@@ -129,15 +129,10 @@ var yoUp = {
         "</div>" +
       "</div>";
   },
+  locale: "pt_br",
   lang: {
-    lang: "pt_br",
-    pt_br: {
-      cancel: "Cancelar",
-      confirm: "Confirmar"
-    },
-    en_us: {
-      cancel: "Cancel",
-      confirm: "Confirm"
-    }
+    confirm: { en_us: "Confirm", pt_br: "Confirmar" },
+    cancel: { en_us: "Cancel", pt_br: "Cancelar"},
+    ok: { en_us: "OK", pt_br: "OK" }
   }
 };
