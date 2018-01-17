@@ -12,13 +12,16 @@ On document load, script will add to body a div with the modal.<br>
 #### Show modal
 ```
 yoUp.open({
-  width: Width of the modal.,
-  title: "Title, if not present, header will be hidden",
-  content: "content of the modal",
-  footer: "alert/confirm/none",
-  callback: "function when pressed confirm button",
-  onLoad: "function before modal is loaded"
-  onLoaded: "function after modal is loaded"
+    width: Width of the modal.,
+    title: "Title, if not present, header will be hidden",
+    content: "content of the modal",
+    footer: "alert/confirm/none",
+    callback: "function when pressed confirm button",
+    onLoad: "function before modal is loaded",
+    onLoaded: "function after modal is loaded",
+    headerColor: "hex/rgb",
+    contentColor: "hex/rgb",
+    footerColor: "hex/rgb"
 });
 ```
 
