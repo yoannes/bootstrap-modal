@@ -7,18 +7,20 @@ Use it with your own risk.
 On document load, script will add to body a div with the modal.<br>
 
 #### Set language
-`yoUp.lang.lang = "pt_br / en_us. Default pt_br";`
+`yoUp.setLocale("en_us/pt_br")`
 
 #### Show modal
 ```
-yoUp.show({
-    type: "confirm/alert. Default confirm",
-    title: "html code",
-    callback: "callback function when click OK or CONFIRM",
-    large: "true/false. Create large or normal modal. Default false",
-    autohide: "true/false. Auto close modal when click OK or CONFIRM"
+yoUp.open({
+  width: Width of the modal.,
+  title: "Title, if not present, header will be hidden",
+  content: "content of the modal",
+  footer: "alert/confirm/none",
+  callback: "function when pressed confirm button",
+  onLoad: "function before modal is loaded"
+  onLoaded: "function after modal is loaded"
 });
 ```
 
 #### Hide modal
-`yoUp.hide();`
+`yoUp.close();`
