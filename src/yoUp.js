@@ -1,6 +1,6 @@
 /*
 
-yoUp V1.3
+yoUp V1.4
 This script requires jQuery and Bootstrap V4
 
 params = {
@@ -86,7 +86,13 @@ var yoUp = {
 
   },
   close: function () {
-    $("#yoUpModal").modal("dispose");
+    $("#yoUpModal").modal("hide");
+  },
+  scrollTop: function (val){
+    if (!val) val = 0;
+
+    $('#yoUpModal').scrollTop(val);
+
   },
   setLocale: function (locale) {
     if (locale !== "en_us" || locale !== "pt_br")
