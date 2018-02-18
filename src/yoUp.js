@@ -176,7 +176,7 @@ var yoUpElements = {
     }
 
     var modal =
-      "<div class='modal fade' id='yoUpModal' tabindex='-1' role='dialog' >" +
+      "<div class='modal fade' id='yoUpModal' role='dialog' >" +
         "<div class='modal-dialog' role='document' style='"+ (yoUpParams.width ? "max-width: " + yoUpParams.width : "") +"'>" +
           "<div class='modal-content' style='"+ radius +"'>" +
             header +
