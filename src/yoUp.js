@@ -1,202 +1,315 @@
-/*
-yoUp V1.4
-This script requires jQuery and Bootstrap V4
-
-params = {
-  width: Width of the modal.,
-  title: "Title, if not present, header will be hidden",
-  content: "content of the modal",
-  footer: "alert/confirm/none",
-  callback: "function when pressed confirm button",
-  onLoad: "function before modal is loaded",
-  onLoaded: "function after modal is loaded",
-  headerColor: "hex/rgb",
-  contentColor: "hex/rgb",
-  footerColor: "hex/rgb"
-  borderRadius: "px"
-};
-
-*/
-
-var yoUp = {
-  open: function (params) {
-    yoUpParams.setDefault();
-
+/**
+ * @author Yoannes
+ * @version 1.4.0
+ * @licence MIT
+ * @namespace YoUp
+ */
+var YoUp = function (locale) {
+  /**
+   * Open modal
+   * @memberOf YoUp
+   * @function open
+   * @param {Object} params
+   * @param {string|int} [params.width]             - Width of the modal in px / % / vw. Default 50%
+   * @param {string}     params.title               - Title of the modal
+   * @param {content}    params.content             - Content/body of the modal
+   * @param {string}     [params.footer]            - Type of footer: alert/confirm/none. Default confirm
+   * @param {string}     [params.footerBtnPosition] - Position of buttons left/center/right. Default right
+   * @param {string}     [params.headerBg]          - Header background color in hex
+   * @param {string}     [params.headerFontColor]   - Header font color in hex
+   * @param {string}     [params.contentBg]         - Content/body background color in hex
+   * @param {number}     [params.borderRadius]      - Border radius of the modal
+   */
+  this.open = function (params) {
     if (!params)
       params = {};
 
     if (params.width)
-      yoUpParams.width = params.width;
+      settings.width = params.width;
+    else
+      settings.width = defaultSettings.width;
 
     if (params.title)
-      yoUpParams.title = params.title;
+      settings.title = params.title;
 
     if (params.content)
-      yoUpParams.content = params.content;
+      settings.content = params.content;
 
     if (params.footer)
-      yoUpParams.footer = params.footer;
+      settings.footer = params.footer;
     else
-      yoUpParams.footer = "confirm";
+      settings.footer = defaultSettings.footer;
 
-    if (params.headerColor)
-      yoUpParams.tmpHeaderColor = params.headerColor;
+    if (params.footerBtnPosition)
+      settings.footerBtnPosition = params.footerBtnPosition;
+    else
+      settings.footerBtnPosition = defaultSettings.footerBtnPosition;
 
-    if (params.contentColor)
-      yoUpParams.tmpContentColor = params.contentColor;
+    if (params.headerBg)
+      settings.headerBg = params.headerBg;
+    else
+      settings.headerBg = defaultSettings.headerBg;
 
-    if (params.footerColor)
-      yoUpParams.tmpFooterColor = params.footerColor;
+    if (params.headerFontColor)
+      settings.headerFontColor = params.headerFontColor;
+    else
+      settings.headerFontColor = defaultSettings.headerFontColor;
+
+    if (params.contentBg)
+      settings.contentBg = params.contentBg;
+    else
+      settings.contentBg = defaultSettings.contentBg;
 
     if (params.borderRadius)
-      yoUpParams.borderRadius = params.borderRadius;
+      settings.borderRadius = params.borderRadius;
+    else
+      settings.borderRadius = defaultSettings.borderRadius;
 
+    createModal();
 
-    // $("body").append();
-    yoUpElements.createModal();
+    var $e = $("#yoUpModal");
 
-    console.log(params);
+    $e.modal("show");
 
-    if (params.onLoad)
-      params.onLoad();
-
-    var e = $("#yoUpModal");
-
-    e.modal("show");
-
-    e.off("hidden.bs.modal").on("hidden.bs.modal", function () {
-      console.log("remove");
+    $e.off("hidden.bs.modal").on("hidden.bs.modal", function () {
       $("#yoUpModal").remove();
     });
 
+    if (params.onLoad) {
+      $e.off("show.bs.modal").on("show.bs.modal", function () {
+        params.onLoad();
+      });
+    }
+
     if (params.onLoaded){
-      e.off("shown.bs.modal").on("shown.bs.modal", function () {
+      $e.off("shown.bs.modal").on("shown.bs.modal", function () {
         params.onLoaded();
       })
     }
 
     if (params.callback){
-      $("#yoUpConfirmBtn")
-        .off("click")
-        .on("click", function () {
-          params.callback();
-        });
+      $("#yoUpConfirmBtn").off("click").on("click", function () {
+        params.callback();
+      });
     }
+  };
 
-  },
-  close: function () {
+  /**
+   * Hide modal
+   * @memberOf YoUp
+   * @function close
+   */
+  this.close = function () {
     $("#yoUpModal").modal("hide");
-  },
-  scrollTop: function (val){
+  };
+
+  /**
+   * Scroll modal to defined px
+   * @memberOf YoUp
+   * @function scrollTop
+   * @param {number} val
+   */
+  this.scrollTop = function (val) {
     if (!val) val = 0;
-
     $('#yoUpModal').scrollTop(val);
+  };
 
-  },
-  setLocale: function (locale) {
-    if (locale !== "en_us" || locale !== "pt_br")
-      return;
+  /**
+   * Change default language.
+   * @memberOf setLocale
+   * @function locale
+   * @param {string} locale
+   */
+  this.setLocale = function (locale) {
+    if (locale === "en_us" || locale === "pt_br" || locale === "ja")
+      settings.locale.lang = locale;
+  };
 
-    yoUpLocale.locale = locale;
-  },
-  setHeaderColor: function (color) {
-    yoUpStyle.headerColor = color;
-  },
-  setHeaderFontColor: function (color) {
-    yoUpStyle.headerFontColor = color;
-  },
-  setContentColor: function (color) {
-    yoUpStyle.headerColor = color;
-  },
-  setFooterColor: function (color) {
-    yoUpStyle.headerColor = color;
-  },
-  setBorderRadius: function (px) {
-    yoUpStyle.borderRadius = px;
-  }
-};
+  /**
+   * Change header background color
+   * @memberOf YoUp
+   * @function setHeaderBg
+   * @param {string} color
+   */
+  this.setHeaderBg = function (color) {
+    defaultSettings.headerBg = color;
+  };
 
-var yoUpParams = {
-  setDefault: function () {
-    yoUpParams.width = "";
-    yoUpParams.title = "";
-    yoUpParams.content = "";
-    yoUpParams.footer = "confirm";
-    yoUpParams.callback = null;
-    yoUpParams.onLoad = null;
-    yoUpParams.onLoaded = null;
-    yoUpParams.headerColor = null;
-    yoUpParams.headerFontColor = null;
-    yoUpParams.contentColor = null;
-    yoUpParams.footerColor = null;
-    yoUpParams.borderRadius = null;
-  }
-};
+  /**
+   * Change header's font color
+   * @memberOf YoUp
+   * @function setHeaderFontColor
+   * @param {string} color
+   */
+  this.setHeaderFontColor = function (color) {
+    defaultSettings.headerFontColor = color;
+  };
 
-var yoUpStyle = {
-  headerColor: "#fff",
-  headerFontColor: "#000000",
-  contentColor: "#fff",
-  footerColor: "#fff",
-  borderRadius: "0"
-};
+  /**
+   * Change content background color
+   * @memberOf YoUp
+   * @function setContentBg
+   * @param {string} color
+   */
+  this.setContentBg = function (color) {
+    defaultSettings.contentBg = color;
+  };
 
-var yoUpElements = {
-  createModal: function () {
-    var header = "", footer = "";
+  /**
+   * Change border radius of the modal
+   * @memberOf YoUp
+   * @function setBorderRadius
+   * @param {number} px
+   */
+  this.setBorderRadius = function (px) {
+    defaultSettings.borderRadius = px;
+  };
+
+  /**
+   * Add custom classes to footer buttons
+   * @memberOf YoUp
+   * @function setFooterBtnClass
+   * @param {Object} c
+   * @param {string} c.ok      - Add classes to OK button
+   * @param {string} c.confirm - Add classes to CONFIRM button
+   * @param {string} c.cancel  - Add classes to CANCEL button
+   */
+  this.setFooterBtnClass = function (c) {
+    if (c.ok)
+      defaultSettings.footerOkBtn = c.ok;
+
+    if (c.confirm)
+      defaultSettings.footerConfirmBtn = c.confirm;
+
+    if (c.cancel)
+      defaultSettings.footerCancelBtn = c.cancel;
+  };
+
+  /**
+   * Change border radius of the modal
+   * @memberOf YoUp
+   * @function setFooterBtnPosition
+   * @param {string} pos - left/center/right
+   */
+  this.setFooterBtnPosition = function (pos) {
+    defaultSettings.footerBtnPosition = pos;
+  };
+
+  function createModal() {
+    var header = '', footer = '';
     var radius =
-      "-webkit-border-radius: "+ (yoUpParams.borderRadius ? yoUpParams.borderRadius : yoUpStyle.borderRadius) +"px !important; " +
-      "-moz-border-radius: "+ (yoUpParams.borderRadius ? yoUpParams.borderRadius : yoUpStyle.borderRadius) +"px !important; " +
-      "border-radius: "+ (yoUpParams.borderRadius ? yoUpParams.borderRadius : yoUpStyle.borderRadius) +"px !important;";
+      '-webkit-border-radius: '+ settings.borderRadius + 'px !important; ' +
+      '-moz-border-radius: ' + settings.borderRadius + 'px !important; ' +
+      'border-radius: ' + settings.borderRadius + 'px !important;';
 
-    if (yoUpParams.title){
-      var bg = "background-color: "+ (yoUpParams.tmpHeaderColor ? yoUpParams.tmpHeaderColor : yoUpStyle.headerColor) +";";
-      var font = "color: "+ (yoUpParams.headerFontColor ? yoUpParams.headerFontColor : yoUpStyle.headerFontColor) +";";
+    if (settings.title){
+      var r = settings.borderRadius - 1;
+      if (settings.borderRadius === 0)
+        r = settings.borderRadius;
+
+      var css =
+        'padding: 10px;'+
+        'background-color: '+ settings.headerBg +';' +
+        'color: '+ settings.headerFontColor +';' +
+        'border-top-right-radius: '+ r +'px !important;' +
+        'border-top-left-radius: '+ r +'px !important;' +
+        '-moz-border-radius-topleft: '+ r +'px !important;' +
+        '-moz-border-radius-topright: '+ r +'px !important;' +
+        '-webkit-border-top-left-radius: '+ r +'px !important;' +
+        '-webkit-border-top-right-radius: '+ r +'px !important;';
+
       header =
-        "<div class='modal-header' style='padding: 10px; "+ bg + font + radius +"'>" +
-          yoUpParams.title +
-          "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true' style='"+ font +"'>&times;</span></button>" +
-        "</div>";
+        '<div class="modal-header" style="'+ css +'">' +
+          '<h5 class="modal-title">'+ settings.title + '</h5>' +
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span>' +
+          '</button>' +
+        '</div>';
     }
 
+    if (settings.footer === 'confirm'){
+      var btn =
+        '<button type="button" class="btn btn-primary '+ settings.footerConfirmBtn +'" style="margin-right: 5px" id="yoUpConfirmBtn">'+ settings.locale.list.confirm[settings.locale.lang] +'</button>' +
+        '<button type="button" class="btn btn-secondary '+ settings.footerCancelBtn +'" data-dismiss="modal">'+ settings.locale.list.close[settings.locale.lang] +'</button>';
 
+      if (settings.footerBtnPosition === 'left') {
+        btn = '<div style="width: 100%; text-align: left">'+ btn +'</div>';
+      }
 
-    if (yoUpParams.footer === "confirm"){
-      footer =
-        "<div class='modal-footer' style='padding: 10px; background-color: "+ (yoUpParams.footerColor ? yoUpParams.footerColor : yoUpStyle.footerColor) +";''>" +
-          "<button type='button' class='btn btn-primary' id='yoUpConfirmBtn'>"+ yoUpLocale.lang.confirm[yoUpLocale.locale] +"</button>" +
-          "<button type='button' class='btn btn-secondary' data-dismiss='modal'>"+ yoUpLocale.lang.close[yoUpLocale.locale] +"</button>" +
-        "</div>";
+      else if (settings.footerBtnPosition === 'center') {
+        btn = '<div style="width: 100%; text-align: center">'+ btn +'</div>';
+      }
+
+      footer = '<div class="modal-footer" style="padding: 10px;">' + btn + '</div>';
     }
-    else if (yoUpParams.footer === "alert"){
+    else if (settings.footer === 'alert'){
       footer =
-        "<div class='modal-footer' style='padding: 10px; background-color: "+ (yoUpParams.footerColor ? yoUpParams.footerColor : yoUpStyle.footerColor) +";''>" +
-          "<button type='button' class='btn btn-primary' data-dismiss='modal'>"+ yoUpLocale.lang.ok[yoUpLocale.locale] +"</button>" +
-        "</div>";
+        '<div class="modal-footer" style="padding: 10px;">' +
+          '<button type="button" class="btn btn-primary '+ settings.footerOkBtn +'"  data-dismiss="modal">'+ settings.locale.list.ok[settings.locale.lang] +'</button>' +
+        '</div>';
     }
 
     var modal =
-      "<div class='modal fade' id='yoUpModal' role='dialog' >" +
-        "<div class='modal-dialog' role='document' style='"+ (yoUpParams.width ? "max-width: " + yoUpParams.width : "") +"'>" +
-          "<div class='modal-content' style='"+ radius +"'>" +
+      '<div class="modal fade" id="yoUpModal" role="dialog">' +
+        '<div class="modal-dialog" role="document" style="'+ (settings.width ? 'max-width: '+settings.width+';' : '') +'">' +
+          '<div class="modal-content" style="'+ radius +'">' +
             header +
-            "<div class='modal-body' style='background-color: "+ (yoUpParams.contentColor ? yoUpParams.contentColor : yoUpStyle.contentColor) +";''>" + yoUpParams.content + "</div>" +
+            '<div class="modal-body" style="background-color: '+ settings.contentBg +'; '+radius+'">'+ settings.content +'</div>' +
+
             footer +
-          "</div>" +
-        "</div>" +
-      "</div>";
+          '</div>' +
+        '</div>' +
+      '</div>';
 
-    var el = document.createElement("yoUpModalDiv");
-    el.innerHTML = modal;
-    document.body.appendChild(el);
-  }
-};
+    // REMOVE PREVIOUS MODAL IF EXISTS
+    var $e = $('#yoUpModalDiv');
+    if ($e.length)
+      $e.remove();
 
-var yoUpLocale = {
-  locale: "en_us",
-  lang: {
-    confirm: { en_us: "Confirm", pt_br: "Confirmar" },
-    close: {   en_us: "Close",   pt_br: "Fechar"},
-    ok: {      en_us: "OK",      pt_br: "OK" }
+    $('body').append('<div id="yoUpModalDiv">'+ modal +'</div>');
   }
+
+  var settings = {
+    width: "",
+    title: "",
+    content: "",
+    footer: "confirm",
+    callback: null,
+    onLoad: null,
+    onLoaded: null,
+    headerBg: "#ffffff",
+    headerFontColor: "#000000",
+    contentBg: "#ffffff",
+    footerConfirmBtn: "",
+    footerCancelBtn: "",
+    footerOkBtn: "",
+    footerBtnPosition: "right",
+    borderRadius: 0,
+    locale: {
+      lang: (locale ? locale : "en_us"),
+      list: {
+        confirm: { en_us: "Confirm", pt_br: "Confirmar", ja: "" },
+        close: {   en_us: "Close",   pt_br: "Fechar",    ja: "" },
+        ok: {      en_us: "OK",      pt_br: "OK",        ja: "" }
+      }
+    }
+  };
+
+  var defaultSettings = {
+    borderRadius: 0,
+    width: "",
+    content: "",
+    contentBg: "#ffffff",
+    footer: "confirm",
+    footerConfirmBtn: "",
+    footerCancelBtn: "",
+    footerOkBtn: "",
+    footerBtnPosition: "right",
+    onLoad: null,
+    onLoaded: null,
+    callback: null,
+    title: "",
+    headerBg: "#ffffff",
+    headerFontColor: "#000000"
+  };
 };

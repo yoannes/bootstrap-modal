@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 
   <title>bootstrap-yoUp</title>
+  <style>
+    .confirm {
+      border-radius: 20px;
+    }
+    .cancel {
+      border-radius: 0;
+      background-color: green;
+    }
+  </style>
 </head>
 <body>
 <Br>
@@ -32,12 +41,36 @@
       <td><input type="text" class="form-control form-control-sm" id="callback" value="Callback"></td>
     </tr>
     <tr>
+      <td>Header</td>
+      <td><input type="color" id="headerColor" value="#FFFFFF" /></td>
+    </tr>
+    <tr>
       <td>Footer</td>
       <td>
         <select class="form-control form-control-sm" id="setFooter">
           <option value="none">None</option>
           <option value="confirm" selected>Confirm</option>
           <option value="alert">Alert</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Footer's buttons position</td>
+      <td>
+        <select class="form-control form-control-sm" id="setFooterBtnPos">
+          <option value="left">Left</option>
+          <option value="center" selected>Center</option>
+          <option value="right" selected>Right</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Lang</td>
+      <td>
+        <select class="form-control form-control-sm" id="setlang" onchange="setLang(this.value)">
+          <option value="en_us">English</option>
+          <option value="pt_br">Portuguese</option>
+          <option value="ja">Japanese</option>
         </select>
       </td>
     </tr>
@@ -53,17 +86,31 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 <script src="src/yoUp.js"></script>
 <script>
+  var yo = new YoUp();
+  yo.setBorderRadius(10);
+  yo.setFooterBtnClass({
+    confirm: 'confirm',
+    cancel: 'cancel'
+  });
+
   function openModal() {
-    yoUp.open({
+
+
+    yo.open({
       width: $("#width").val(),
       title: $("#title").val(),
       content: $("#content").val(),
       footer: $("#setFooter").val(),
-      headerColor: "#000",
+      footerBtnPosition: $("#setFooterBtnPos").val(),
+      headerBg: $("#headerColor").val(),
       callback: function () {
         console.log($("#callback").val());
       }
     });
+  }
+
+  function setLang(v) {
+    yo.setLocale(v)
   }
 </script>
 </body>
