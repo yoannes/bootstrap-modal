@@ -1,6 +1,6 @@
 /**
  * @author Yoannes
- * @version 1.4.0
+ * @version 1.4.2
  * @licence MIT
  * @namespace YoUp
  */
@@ -15,10 +15,16 @@ var YoUp = function (locale) {
    * @param {content}    params.content             - Content/body of the modal
    * @param {string}     [params.footer]            - Type of footer: alert/confirm/none. Default confirm
    * @param {string}     [params.footerBtnPosition] - Position of buttons left/center/right. Default right
+   * @param {string}     [params.footerOkBtnClass]      - Add custom classes to OK button
+   * @param {string}     [params.footerConfirmBtnClass] - Add custom classes to CONFIRM button
+   * @param {string}     [params.footerCancelBtnClass]  - Add custom classes to CANCEL button
+   * @param {boolean}    [params.footerBorder]      - Use footer border
    * @param {string}     [params.headerBg]          - Header background color in hex
    * @param {string}     [params.headerFontColor]   - Header font color in hex
    * @param {string}     [params.contentBg]         - Content/body background color in hex
    * @param {number}     [params.borderRadius]      - Border radius of the modal
+   * @param {function}   [params.shownCallback]     - Callback function on shown
+   * @param {function}   [params.hiddenCallback]    - Callback function on hidden
    */
   this.open = function (params) {
     if (!params)
@@ -31,6 +37,8 @@ var YoUp = function (locale) {
 
     if (params.title)
       settings.title = params.title;
+    else
+      settings.title = defaultSettings.title;
 
     if (params.content)
       settings.content = params.content;
@@ -44,6 +52,26 @@ var YoUp = function (locale) {
       settings.footerBtnPosition = params.footerBtnPosition;
     else
       settings.footerBtnPosition = defaultSettings.footerBtnPosition;
+
+    if (params.footerOkBtnClass)
+      settings.footerOkBtn = params.footerOkBtnClass;
+    else
+      settings.footerOkBtn = defaultSettings.footerOkBtn;
+
+    if (params.footerConfirmBtnClass)
+      settings.footerConfirmBtn = params.footerConfirmBtnClass;
+    else
+      settings.footerConfirmBtn = defaultSettings.footerConfirmBtn;
+
+    if (params.footerCancelBtnClass)
+      settings.footerCancelBtn = params.footerCancelBtnClass;
+    else
+      settings.footerCancelBtn = defaultSettings.footerCancelBtn;
+
+    if (params.footerBorder)
+      settings.footerBorder = params.footerBorder;
+    else
+      settings.footerBorder = defaultSettings.footerBorder;
 
     if (params.headerBg)
       settings.headerBg = params.headerBg;
@@ -71,8 +99,17 @@ var YoUp = function (locale) {
 
     $e.modal("show");
 
+    $e.off("shown.bs.modal").on("shown.bs.modal", function () {
+      if (params.shownCallback)
+        params.shownCallback();
+    });
+
     $e.off("hidden.bs.modal").on("hidden.bs.modal", function () {
       $("#yoUpModal").remove();
+
+      if (params.hiddenCallback)
+        params.hiddenCallback();
+
     });
 
     if (params.onLoad) {
@@ -99,8 +136,9 @@ var YoUp = function (locale) {
    * @memberOf YoUp
    * @function close
    */
-  this.close = function () {
-    $("#yoUpModal").modal("hide");
+  this.close = function (hiddenCallback) {
+    var $modal = $("#yoUpModal");
+    $modal.modal("hide");
   };
 
   /**
@@ -186,6 +224,16 @@ var YoUp = function (locale) {
   };
 
   /**
+   * Footer border
+   * @memberOf YoUp
+   * @function setFooterBorder
+   * @param {boolean} x
+   */
+  this.setFooterBorder = function (x) {
+    defaultSettings.footerBorder = x;
+  };
+
+  /**
    * Change border radius of the modal
    * @memberOf YoUp
    * @function setFooterBtnPosition
@@ -228,23 +276,39 @@ var YoUp = function (locale) {
     }
 
     if (settings.footer === 'confirm'){
-      var btn =
-        '<button type="button" class="btn btn-primary '+ settings.footerConfirmBtn +'" style="margin-right: 5px" id="yoUpConfirmBtn">'+ settings.locale.list.confirm[settings.locale.lang] +'</button>' +
-        '<button type="button" class="btn btn-secondary '+ settings.footerCancelBtn +'" data-dismiss="modal">'+ settings.locale.list.close[settings.locale.lang] +'</button>';
-
+      var btn = '';
       if (settings.footerBtnPosition === 'left') {
-        btn = '<div style="width: 100%; text-align: left">'+ btn +'</div>';
+        btn =
+          '<div style="width: 100%; text-align: left">'+
+            '<button type="button" class="btn btn-primary '+ settings.footerConfirmBtn +'" style="margin-right: 5px" id="yoUpConfirmBtn">'+ settings.locale.list.confirm[settings.locale.lang] +'</button>' +
+            '<button type="button" class="btn btn-secondary '+ settings.footerCancelBtn +'" data-dismiss="modal">'+ settings.locale.list.close[settings.locale.lang] +'</button>' +
+          '</div>';
       }
 
       else if (settings.footerBtnPosition === 'center') {
-        btn = '<div style="width: 100%; text-align: center">'+ btn +'</div>';
+        btn =
+          '<div style="width: 100%;">'+
+            '<div class="row mx-auto" style="max-width: 500px">' +
+              '<div class="col-6" style="padding: 2px;">' +
+                '<button type="button" class="btn btn-primary btn-block '+ settings.footerConfirmBtn +'" id="yoUpConfirmBtn">'+ settings.locale.list.confirm[settings.locale.lang] +'</button>' +
+              '</div>' +
+              '<div class="col-6" style="padding: 2px;">' +
+                '<button type="button" class="btn btn-secondary btn-block '+ settings.footerCancelBtn +'" data-dismiss="modal">'+ settings.locale.list.close[settings.locale.lang] +'</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+      else {
+        btn =
+          '<button type="button" class="btn btn-primary '+ settings.footerConfirmBtn +'" id="yoUpConfirmBtn">'+ settings.locale.list.confirm[settings.locale.lang] +'</button>' +
+          '<button type="button" class="btn btn-secondary '+ settings.footerCancelBtn +'" data-dismiss="modal">'+ settings.locale.list.close[settings.locale.lang] +'</button>';
       }
 
-      footer = '<div class="modal-footer" style="padding: 10px;">' + btn + '</div>';
+      footer = '<div class="modal-footer" style="padding: 10px; '+(!settings.footerBorder ? 'border-top: none' : '')+'">' + btn + '</div>';
     }
     else if (settings.footer === 'alert'){
       footer =
-        '<div class="modal-footer" style="padding: 10px;">' +
+        '<div class="modal-footer" style="padding: 10px; '+(!settings.footerBorder ? 'border-top: none' : '')+'">' +
           '<button type="button" class="btn btn-primary '+ settings.footerOkBtn +'"  data-dismiss="modal">'+ settings.locale.list.ok[settings.locale.lang] +'</button>' +
         '</div>';
     }
@@ -284,6 +348,7 @@ var YoUp = function (locale) {
     footerCancelBtn: "",
     footerOkBtn: "",
     footerBtnPosition: "right",
+    footerBorder: true,
     borderRadius: 0,
     locale: {
       lang: (locale ? locale : "en_us"),
@@ -305,6 +370,7 @@ var YoUp = function (locale) {
     footerCancelBtn: "",
     footerOkBtn: "",
     footerBtnPosition: "right",
+    footerBorder: true,
     onLoad: null,
     onLoaded: null,
     callback: null,
