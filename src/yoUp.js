@@ -1,6 +1,6 @@
 /**
  * @author Yoannes
- * @version 1.4.2
+ * @version 1.4.3
  * @licence MIT
  * @namespace YoUp
  */
@@ -353,9 +353,9 @@ var YoUp = function (locale) {
     locale: {
       lang: (locale ? locale : "en_us"),
       list: {
-        confirm: { en_us: "Confirm", pt_br: "Confirmar", ja: "" },
-        close: {   en_us: "Close",   pt_br: "Fechar",    ja: "" },
-        ok: {      en_us: "OK",      pt_br: "OK",        ja: "" }
+        confirm: { en_us: "Confirm", pt_br: "Confirmar", ja: "OK" },
+        close: {   en_us: "Close",   pt_br: "Fechar",    ja: "キャンセル" },
+        ok: {      en_us: "OK",      pt_br: "OK",        ja: "OK" }
       }
     }
   };
